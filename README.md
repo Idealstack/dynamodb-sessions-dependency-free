@@ -10,6 +10,7 @@ Idealstack uses this to provide transparent support for DynamoDB sessions in our
 - Dependency-free - does not depend on any other composer packages
 - Does not require an autoloader
 - Supports most common AWS authentication methods
+- Compatible with all PHP versions (even php5.6)
 - *Does not support locking*
 
 
@@ -23,13 +24,13 @@ Here's a couple of reasons why you might:
 needed.  This potentially slows things down, uses more RAM and Opcache etc
 - Note that we haven't done benchmarks yet to prove this is faster.  But I suspect it probably is.
 - If you choose to include this automatically using php's auto_prepend_file - you can get funny effects if you use the 
-AWS SDK version.  It requires an autoloader, which can mess with your projects own autoloading.  Also it 'pollutes' 
+AWS SDK version.  It requires an autoloader, which can mess with your project's own autoloading.  Also it 'pollutes' 
 the namespace with it's versions of common libraries like Guzzle.  If your code uses a different version of these 
 libraries you should
  expect problems.
 
 
-#How to use it
+# How to use it
 
 Configuration is the same as the AWS SDK version, so read their docs:
 

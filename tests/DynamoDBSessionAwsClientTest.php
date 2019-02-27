@@ -76,12 +76,34 @@ class DynamoDBSessionAwsClientTest extends TestCase
                 'code' => 200
             ]
         );
+        $AwsClient = $mock;
+        $credentials = $method->invoke($AwsClient);
+        $this->assertEquals('TEST3', $credentials['key']);
+
+        //Pass credentials via the EC2 metadata.  We'll do this by mocking the client
+        putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI');
+        putenv('AWS_ACCESS_KEY_ID');
+        putenv('AWS_SECRET_ACCESS_KEY');
+        putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
+        $mock = Mockery::mock(\DynamoDbSessionsDependencyFree\AwsClient::class,
+            [ [ 'region' => getenv('AWS_REGION'),
+                'version' => 'latest',]]
+        )->makePartial();
+        $mock->shouldReceive('curl')->andReturn(
+            [
+                'content' => json_encode([
+                    'AccessKeyId' => 'TEST5',
+                    'SecretAccessKey' => 'TEST5',
+                    'Token' => 'TEST5',
+                    'Expiration' => time(),
+                ]),
+                'code' => 200
+            ]
+        );
 
         $AwsClient = $mock;
         $credentials = $method->invoke($AwsClient);
-
-        $this->assertEquals('TEST3', $credentials['key']);
-
+        $this->assertEquals('TEST5', $credentials['key']);
 
         //Fallthrough to the ini file
         putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI');

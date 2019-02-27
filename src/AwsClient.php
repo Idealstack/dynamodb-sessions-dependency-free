@@ -11,13 +11,19 @@ namespace DynamoDbSessionsDependencyFree;
  */
 class AwsClient
 {
-    const SERVER_URI = 'http://169.254.170.2';
+    const ECS_SERVER_URI = 'http://169.254.170.2';
     const ENV_URI = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
     const ENV_KEY = 'AWS_ACCESS_KEY_ID';
     const ENV_SECRET = 'AWS_SECRET_ACCESS_KEY';
     const ENV_SESSION = 'AWS_SESSION_TOKEN';
     const ENV_PROFILE = 'AWS_PROFILE';
     const ENV_FILENAME = 'AWS_CREDENTIALS_FILENAME';
+
+
+    const EC2_SERVER_URI = 'http://169.254.169.254/latest/';
+    const CRED_PATH = 'meta-data/iam/security-credentials/';
+
+    const ENV_DISABLE = 'AWS_EC2_METADATA_DISABLED';
 
     protected $service = 'DynamoDB';
     protected $client;
@@ -184,7 +190,7 @@ class AwsClient
             } elseif (getenv(self::ENV_URI)) {
                 return $this->getEcsCredentials();
             } else {
-                //TODO : implement EC2 instance role approach.
+                return $this->getInstanceProfileCredentials();
             }
         });
     }
@@ -271,6 +277,20 @@ class AwsClient
     }
 
 
+    private function getInstanceProfileCredentials()
+    {
+        $curl_result = $this->curl(self::EC2_SERVER_URI . self::CRED_PATH);
+        $response = $curl_result['content'];
+        $result = $this->decodeResult($response);
+        return [
+            'key' => $result['AccessKeyId'],
+            'secret' => $result['SecretAccessKey'],
+            'token' => $result['Token'],
+            'expiration' => strtotime($result['Expiration']),
+        ];
+    }
+
+
     /**
      * Fetch credential URI from ECS environment variable
      *
@@ -279,7 +299,7 @@ class AwsClient
     private function getEcsUri()
     {
         $creds_uri = getenv(self::ENV_URI);
-        return self::SERVER_URI . $creds_uri;
+        return self::ECS_SERVER_URI . $creds_uri;
     }
 
     private function decodeResult($response)
