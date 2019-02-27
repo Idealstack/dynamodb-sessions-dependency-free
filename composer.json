@@ -1,0 +1,27 @@
+{
+    "name": "idealstack/dynamodb-sessions-dependency-free",
+    "description": "An implementation of a session handler for storing sessions in AWS's DynamoDB, but with no dependencies on the AWS SDK, Guzzle etc",
+    "homepage": "https://github.com/Idealstack/dynamodb-sessions-dependency-free",
+    "keywords": ["aws","amazon","sdk","sessions","dynamodb","cloud"],
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Idealstack",
+            "homepage": "https://idealstack.io"
+        }
+    ],
+    "require": {
+        "php": ">=5.5",
+        "ext-json": "*",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "DynamoDbSessionsDependencyFree\\": "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    }
+}

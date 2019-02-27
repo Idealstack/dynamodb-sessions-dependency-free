@@ -1,0 +1,4 @@
+.env.testing
+vendor/
+
+.idea/
