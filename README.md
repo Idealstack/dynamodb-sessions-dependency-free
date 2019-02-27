@@ -26,7 +26,7 @@ needed.  This potentially slows things down, uses more RAM and Opcache etc
 - Note that we haven't done benchmarks yet to prove this is faster.  But I suspect it probably is.
 - If you choose to include this automatically using php's auto_prepend_file - you can get funny effects if you use the 
 AWS SDK version.  It requires an autoloader, which can mess with your project's own autoloading.  Also it 'pollutes' 
-the namespace with it's versions of common libraries like Guzzle.  If your code uses a different version of these 
+the namespace with it's versions of common libraries like the AWS SDK.  If your code uses a different version of these 
 libraries you should
  expect problems.
 
@@ -45,7 +45,7 @@ use Idealstack\DynamoDbSessionHandlerDependencyFree;
 // or if you don't want to use composer auto-loader, try: 
 // require(__DIR__ .'/vendor/idealstack/dynamodb-session-handler-dependency-free/src/DynamoDbSessionHandler.php');
 
-(new Idealstack\DynamoDbSessionHandlerDependencyFree/DynamoDbSessionHandler(
+(new Idealstack\DynamoDbSessionHandlerDependencyFree\DynamoDbSessionHandler(
 [
             'table_name' => 'your-session-table-name',
 // Credentials.  In production we recomend you use an instance role so you do not need to hardcode this.
