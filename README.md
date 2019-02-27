@@ -41,19 +41,27 @@ You configure the table the same as they recommend.  However we'd suggest you al
 garbage collect your sessions.  Set that on the 'expires' field.
 
 ````php
-use DynamoDbSessionHandlerDependencyFree
-(new DynamoDbSessionHandlerDependencyFree/DynamoDbSessionHandler(
+use Idealstack\DynamoDbSessionHandlerDependencyFree;
+// or if you don't want to use composer auto-loader, try: 
+// require(__DIR__ .'/vendor/idealstack/dynamodb-session-handler-dependency-free/src/DynamoDbSessionHandler.php');
+
+(new Idealstack\DynamoDbSessionHandlerDependencyFree/DynamoDbSessionHandler(
 [
             'table_name' => 'your-session-table-name',
-//Credentials.  In production we recomend you use an instance role so you do not need to hardcode this.
+// Credentials.  In production we recomend you use an instance role so you do not need to hardcode this.
+// At least make sure you don't hardcode them and commit them to github!
             'credentials' => [
                 'key' => 'AAAAAAAAAAAAAAAAAAAAAA',
                 'secret' => 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
             ],
 // These are all defaults. 
-//            'base64' => true, //Base64 data when reading and writing.  Note this is not the behaviour of the AWS SDK, so set to false if you require compatibility with that.
+//             // Base64 data when reading and writing. Avoids problems with binary data,  Note this is not the behaviour 
+//             // of the AWS SDK, so set to false if you require compatibility with existing sessions created with the SDK
+//            'base64' => true, 
 //            'hash_key' => 'id',
-//            //The lifetime of an inactive session before it should be garbage collected. If it isn't provided, the actual lifetime value that will be used is ini_get('session.gc_maxlifetime').
+//
+//            // The lifetime of an inactive session before it should be garbage collected. If it isn't provided, the 
+//            // actual lifetime value that will be used is ini_get('session.gc_maxlifetime').
 //            'session_lifetime' => 300,
 //            'consistent_reads' => true,
 //            'session_locking' => false, //True is not supported
