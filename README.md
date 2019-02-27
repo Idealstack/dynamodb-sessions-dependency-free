@@ -2,16 +2,17 @@
 An implementation of a session handler for storing sessions in dynamoDB, 
 but with no dependencies on the AWS SDK, Guzzle etc.  
 
-Idealstack uses this to provide transparent support for DynamoDB sessions in our platform.
+The [Idealstack](https://idealstack.io) AWS hosting platform uses this to provide transparent support for DynamoDB sessions, so users don't
+need to change anything in their code.
 
 # Features
 
 - Drop-in replacement for the session handler in the AWS SDK
-- Dependency-free - does not depend on any other composer packages
-- Does not require an autoloader
+- Dependency-free - does not depend on any other composer packages. Requires the curl extension. 
+- Does not require an autoloader (although will work fine with one, eg composer)
 - Supports most common AWS authentication methods
 - Compatible with all PHP versions (even php5.6)
-- *Does not support locking*
+- *Does not support locking* (that's just because we don't need it, a PR is welcome)
 
 
 
@@ -36,10 +37,10 @@ Configuration is the same as the AWS SDK version, so read their docs:
 
 https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/service_dynamodb-session-handler.html
 
-You configure the table the same as they recomend.  However we'd suggest you also use the DynamoDB 'ttl' capability to
+You configure the table the same as they recommend.  However we'd suggest you also use the DynamoDB 'ttl' capability to
 garbage collect your sessions.  Set that on the 'expires' field.
 
-````
+````php
 use DynamoDbSessionHandlerDependencyFree
 (new DynamoDbSessionHandlerDependencyFree/DynamoDbSessionHandler(
 [
