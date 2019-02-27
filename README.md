@@ -3,21 +3,29 @@ An implementation of a session handler for storing sessions in dynamoDB,
 but with no dependencies on the AWS SDK, Guzzle etc.  
 
 The [Idealstack](https://idealstack.io) AWS hosting platform uses this to provide transparent support for DynamoDB sessions, so users don't
-need to change anything in their code.
+need to change anything in their code.  If you are trying to run PHP apps on AWS you should really check it out.
 
 # Features
 
 - Drop-in replacement for the session handler in the AWS SDK
-- Dependency-free - does not depend on any other composer packages. Requires the curl extension. 
+- Dependency-free - does not depend on any other composer packages. Only requires the curl extension. 
 - Does not require an autoloader (although will work fine with one, eg composer)
-- Supports most common AWS authentication methods
+- Supports most common AWS authentication methods (eg instance profiles, ECS task roles)
 - Compatible with all PHP versions (even php5.6)
-- *Does not support locking* (that's just because we don't need it, a PR is welcome)
+- *Does not support locking* (that's just because we don't need it, a PR is welcome or raise an issue if you need it)
 
 
 
-# Why do I want this?
+# Why do you want this?
 Possibly you don't.  The [AWS SDK includes a session handler](https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/service_dynamodb-session-handler.html) that is maintained by AWS and might be a better choice for most people.
+
+Why do you want to store session in dynamodb? If you are running PHP in a clustered environment the default file-based
+session handler won't work.  
+
+You can store sessions in an SQL database, or redis but in many ways dynamodb is a better choice on AWS.  
+It automatically scales to any number of reads/writes, can be distributed globally, has an elastic pricing model that
+is cheaper for small sites etc etc.
+
 
 Here's a couple of reasons why you might:
 
@@ -30,6 +38,12 @@ the namespace with it's versions of common libraries like the AWS SDK.  If your 
 libraries you should
  expect problems.
 
+# Installation
+via composer 
+
+`composer require idealstack/dynamodb-sessions-dependency-free`
+
+or clone this repository
 
 # How to use it
 
