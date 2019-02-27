@@ -51,6 +51,7 @@ use DynamoDbSessionHandlerDependencyFree
                 'secret' => 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
             ],
 // These are all defaults. 
+//            'base64' => true, //Base64 data when reading and writing.  Note this is not the behaviour of the AWS SDK, so set to false if you require compatibility with that.
 //            'hash_key' => 'id',
 //            //The lifetime of an inactive session before it should be garbage collected. If it isn't provided, the actual lifetime value that will be used is ini_get('session.gc_maxlifetime').
 //            'session_lifetime' => 300,

@@ -1,7 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use App\Services\Utils;
 
 require_once(__DIR__ . '/../src/DynamoDbSessionHandler.php');
 
@@ -18,7 +17,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $file = '.env.testing';
-        $dotenv = new Dotenv(__DIR__ . '/../../', $file);
+        $dotenv = new \Dotenv\Dotenv(__DIR__ . '/../', $file);
         $dotenv->load();
 
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
@@ -63,7 +62,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
                 'secret' => $result['Credentials']['SecretAccessKey'],
                 'token' => $result['Credentials']['SessionToken']
             ],
-            'table_name' => getenv('IDEALSTACK_SESSION_TABLE')
+            'table_name' => getenv('SESSION_TABLE')
         ]);
 
         //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
