@@ -23,6 +23,9 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
 
     private $connection;
 
+    private $config;
+
+
     /**
      * @param DynamoDbClient $client DynamoDB client
      * @param array $config Session handler config
@@ -30,6 +33,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
     public function __construct(array $config = [])
     {
         $this->connection = new DynamoDbSessionConnection(new DynamoDbClient($config), $config);
+        $this->config = $config + ['base64' => true];
 
     }
     /**
@@ -102,7 +106,8 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
                 $this->destroy($id);
             }
         }
-        return  base64_decode($this->dataRead);
+
+        return  $this->config['base64'] ? base64_decode($this->dataRead) : $this->dataRead;
     }
 
     /**
@@ -116,7 +121,9 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
     public function write($id, $data)
     {
 
-        $data = base64_encode($data);
+        if ($this->config['base64'] ) {
+            $data = base64_encode($data);
+        }
         $changed = $id !== $this->openSessionId
             || $data !== $this->dataRead;
         $this->openSessionId = $id;
