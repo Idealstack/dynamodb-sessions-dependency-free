@@ -17,9 +17,11 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        Utils::loadenv();
+        $file = '.env.testing';
+        $dotenv = new Dotenv(__DIR__ . '/../../', $file);
+        $dotenv->load();
 
-        $this->dynamoDbClient = new \DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
+        $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
             'credentials' => [
@@ -53,7 +55,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         ])->toArray();
 
 
-        $dynamoDbClient = new \DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
+        $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
             'credentials' => [

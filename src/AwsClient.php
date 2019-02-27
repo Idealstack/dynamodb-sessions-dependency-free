@@ -1,6 +1,6 @@
 <?php
 
-namespace DynamoDbSessionsDependencyFree;
+namespace Idealstack\DynamoDbSessionsDependencyFree;
 
 /**
  * Class DynamoDbClient

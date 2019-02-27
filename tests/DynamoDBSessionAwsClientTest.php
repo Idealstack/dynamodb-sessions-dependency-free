@@ -25,10 +25,10 @@ class DynamoDBSessionAwsClientTest extends TestCase
     public function testCredentials()
     {
         //Make the credentials method public so we can test it
-        $method = new ReflectionMethod('\DynamoDbSessionsDependencyFree\AwsClient', 'getCredentials');
+        $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getCredentials');
         $method->setAccessible(true);
 
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
             'credentials' => [
@@ -46,7 +46,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_ACCESS_KEY_ID=TEST2');
         putenv('AWS_SECRET_ACCESS_KEY=TEST2');
 
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
         ]);
@@ -61,7 +61,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_ACCESS_KEY_ID');
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
-        $mock = Mockery::mock(\DynamoDbSessionsDependencyFree\AwsClient::class,
+        $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
            [ [ 'region' => getenv('AWS_REGION'),
                 'version' => 'latest',]]
             )->makePartial();
@@ -85,7 +85,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_ACCESS_KEY_ID');
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
-        $mock = Mockery::mock(\DynamoDbSessionsDependencyFree\AwsClient::class,
+        $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
             [ [ 'region' => getenv('AWS_REGION'),
                 'version' => 'latest',]]
         )->makePartial();
@@ -119,7 +119,7 @@ aws_secret_access_key = TEST4
         );
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/test-credentials.ini');
 
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
         ]);
@@ -137,9 +137,9 @@ aws_secret_access_key = TEST4
     public function testSigningKey()
     {
 
-        $method = new ReflectionMethod('\DynamoDbSessionsDependencyFree\AwsClient', 'getSigningKey');
+        $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getSigningKey');
         $method->setAccessible(true);
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
             'version' => 'latest',
             'credentials' => [
@@ -156,7 +156,7 @@ aws_secret_access_key = TEST4
 
         //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
 
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
             'version' => 'latest',
             'service' => 'service',
@@ -167,7 +167,7 @@ aws_secret_access_key = TEST4
         ]);
 
 
-        $method = new ReflectionMethod('\DynamoDbSessionsDependencyFree\AwsClient', 'getCanonicalRequest');
+        $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getCanonicalRequest');
         $method->setAccessible(true);
 
         $result = $method->invoke($AwsClient,
@@ -210,7 +210,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
         //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
 
-        $AwsClient = new \DynamoDbSessionsDependencyFree\AwsClient([
+        $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
             'version' => 'latest',
             'service' => 'service',
@@ -220,7 +220,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             ]
         ]);
 
-        $method = new ReflectionMethod('\DynamoDbSessionsDependencyFree\AwsClient', 'getAwsRequestHeaders');
+        $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getAwsRequestHeaders');
         $method->setAccessible(true);
 
 

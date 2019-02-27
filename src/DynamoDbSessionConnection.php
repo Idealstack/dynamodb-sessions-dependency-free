@@ -1,5 +1,5 @@
 <?php
-namespace DynamoDbSessionsDependencyFree;
+namespace Idealstack\DynamoDbSessionsDependencyFree;
 
 require_once(__DIR__.'/DynamoDbClient.php');
 
