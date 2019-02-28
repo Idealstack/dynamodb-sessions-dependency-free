@@ -50,7 +50,13 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
     {
         $stsClient = new \Aws\Sts\StsClient($this->credentials);
 
-        echo getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI');
+
+
+        if (getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI')) {
+            //This means we are already using temporary credentials, so skip this test
+            $this->markTestSkipped();
+            return;
+        }
 
         $result = $stsClient->getSessionToken([
             'DurationSeconds' => 1800
