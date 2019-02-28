@@ -5,6 +5,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
+      - env
       - composer install --no-progress --no-suggest
 
   post_build:

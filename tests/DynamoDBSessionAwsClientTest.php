@@ -13,7 +13,7 @@ require_once(__DIR__ . '/../src/AwsClient.php');
 class DynamoDBSessionAwsClientTest extends TestCase
 {
     private $env ;
-    private $envvars = ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'] ;
+    private $envvars = ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_CREDENTIALS_FILENAME'] ;
 
     /**
      * Save the environment
