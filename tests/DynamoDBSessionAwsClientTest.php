@@ -35,7 +35,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
     public function tearDown()
     {
         foreach($this->envvars as $env) {
-            putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI='.$this->env[$env]);
+            putenv($env.'='.$this->env[$env]);
 
         }
     }

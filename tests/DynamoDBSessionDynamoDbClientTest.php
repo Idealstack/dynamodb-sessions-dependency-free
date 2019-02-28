@@ -50,6 +50,8 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
     {
         $stsClient = new \Aws\Sts\StsClient($this->credentials);
 
+        echo getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI');
+
         $result = $stsClient->getSessionToken([
             'DurationSeconds' => 1800
         ])->toArray();
