@@ -185,6 +185,16 @@ class AwsClient
         return $this->cache[$key];
     }
 
+    /**
+     * Print debug information
+     * @param $message
+     */
+    protected function debugPrint($message) {
+        if ($this->config['debug']) {
+            echo $message ."\n";
+        }
+
+    }
 
     /**
      * Return an array of AWS connection details
@@ -195,21 +205,26 @@ class AwsClient
         return $this->runOnce('credentials', function () {
             if (array_key_exists('credentials', $this->config)) {
                 //Then the credentials need to have been set manually (eg for testing)
+                $this->debugPrint('Using manually set credentials');
                 return $this->config['credentials'];
             } elseif (getenv(self::ENV_KEY) !== false) {
+                $this->debugPrint('Using credentials from the environment');
                 $credentials = [
                     'key' => getenv(self::ENV_KEY),
                     'secret' => getenv(self::ENV_SECRET)
                 ];
-                if (self::ENV_SESSION) {
+                    if (self::ENV_SESSION) {
                     $credentials ['token'] = getenv(self::ENV_SESSION);
                 }
                 return $credentials;
             } elseif ($credentials = self::ini()) {
+                $this->debugPrint('Using credentials from the ini file');
                 return $credentials;
             } elseif (getenv(self::ENV_URI)) {
+                $this->debugPrint('Using credentials from ECS');
                 return $this->getEcsCredentials();
             } else {
+                $this->debugPrint('Using credentials from the instance profile');
                 return $this->getInstanceProfileCredentials();
             }
         });
