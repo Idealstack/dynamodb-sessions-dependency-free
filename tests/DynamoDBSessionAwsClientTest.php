@@ -12,14 +12,32 @@ require_once(__DIR__ . '/../src/AwsClient.php');
  */
 class DynamoDBSessionAwsClientTest extends TestCase
 {
+    private $env ;
+    private $envvars = ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'] ;
 
-    public function tearDown()
+    /**
+     * Save the environment
+     */
+    public function setUp()
     {
 
-        //Clear environment
-        putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI');
-        putenv('AWS_ACCESS_KEY_ID');
-        putenv('AWS_SECRET_ACCESS_KEY');
+        foreach($this->envvars as $env) {
+
+            $this->env[$env] = getenv($env);
+
+        }
+        parent::setUp();
+    }
+
+    /**
+     * Restore environment to what it was before the test
+     */
+    public function tearDown()
+    {
+        foreach($this->envvars as $env) {
+            putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI='.$this->env[$env]);
+
+        }
     }
 
     public function testCredentials()
