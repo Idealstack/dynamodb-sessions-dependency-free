@@ -10,8 +10,7 @@ An implementation of a session handler for storing sessions in dynamoDB,
 but with no dependencies on the AWS SDK, Guzzle etc.  
 
 The [Idealstack](https://idealstack.io) AWS hosting platform uses this to provide transparent support for DynamoDB 
-sessions, so users don't need to change anything in their code.  If you are trying to run PHP apps on AWS you should really check it out.
-
+sessions, so users don't need to change anything in their code.  
 # Features
 
 - Essentially  a drop-in replacement for the official session handler in the AWS SDK
