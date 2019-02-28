@@ -17,9 +17,9 @@ sessions, so users don't need to change anything in their code.
 - Dependency-free - does not depend on any other composer packages. Only requires the core curl and json extensions be 
 enabled in PHP 
 - Does not require an autoloader (although will work fine with one, eg composer)
-- Supports most common AWS authentication methods (eg instance profiles, ECS task roles)
-- Compatible with all PHP versions (even php5.6)
-- *Does not support locking* (that's just because we don't need it, a PR is welcome or raise an issue if you need it)
+- Supports most common AWS authentication methods (eg instance profiles, ECS task roles, .aws config files, environment variables)
+- Compatible with all major PHP versions (even PHP 5.6, for all you luddites out there)
+- **Does not support locking** (that's just because we don't need it, a PR is welcome or raise an issue if you need it)
 
 
 
@@ -29,7 +29,7 @@ Possibly you don't.  The [AWS SDK includes a session handler](https://docs.aws.a
 Why do you want to store sessions in dynamodb? If you are running PHP in a clustered environment the default file-based
 session handler won't work.  
 
-You can store sessions in an SQL database, or redis but in many ways dynamodb is a better choice on AWS.  
+You can store sessions in an SQL database, or Redis, but in many ways dynamodb is a better choice on AWS.
 It automatically scales to any number of reads/writes, can be distributed globally, has an elastic pricing model that
 is cheaper for small sites etc etc.
 
