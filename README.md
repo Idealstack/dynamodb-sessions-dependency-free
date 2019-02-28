@@ -79,14 +79,15 @@ use Idealstack\DynamoDbSessionHandlerDependencyFree;
                 'secret' => 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'
             ],
 // These are all defaults. 
-//             // Base64 encode data when reading and writing. Avoids problems with binary data,  Note this is not the behaviour 
-//             // of the AWS SDK, so set to false if you require compatibility with existing sessions created with the SDK
+//             // Base64 encode data when reading and writing. Avoids problems with binary data,  Note this is 
+//             // not the behaviour of the AWS SDK, so set to false if you require compatibility with existing
+//             // sessions  created with the SDK
 //            'base64' => true, 
 //            'hash_key' => 'id',
 //
-//            // The lifetime of an inactive session before it should be garbage collected. If it isn't provided, the 
-//            // actual lifetime value that will be used is ini_get('session.gc_maxlifetime').
-//            'session_lifetime' => 300,
+//            // The lifetime of an inactive session before it should be garbage collected. If it isn't provided, 
+//            // the actual lifetime value that will be used is ini_get('session.gc_maxlifetime').
+//            'session_lifetime' => 1440, // 24 minutes
 //            'consistent_reads' => true, //You almost certainly want this to be true
 //            'session_locking' => false, //True is not supported
         ]
