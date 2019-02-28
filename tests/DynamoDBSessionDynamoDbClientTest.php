@@ -38,8 +38,10 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
             $this->credentials +
-            ['table_name' => getenv('SESSION_TABLE'),
-                'debug' => true]
+            [
+                'table_name' => getenv('SESSION_TABLE'),
+                'debug' => getenv('SESSION_DEBUG') ? getenv('SESSION_DEBUG') : false
+            ]
         );
 
     }
@@ -111,5 +113,25 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
         $result = $dynamoDbClient->read($id);
         $this->assertEmpty($result);
+    }
+
+    /**
+     * Test that performance is reasonable, and stress-test it a bit
+     */
+    public function testPerformance()
+    {
+        $dynamoDbClient = $this->dynamoDbClient;
+
+        $i = 0;
+        $start = microtime(true);
+        while ($i++ < 50) {
+            $data = 'test' . $i;
+            $dynamoDbClient->write('TEST', $data);
+            $result = $dynamoDbClient->read('TEST');
+            $this->assertEquals($data, $result);
+        }
+        $end = microtime(true);
+        echo "Time to read and write 50 sessions in seconds: " . ($end - $start);
+        $this->assertTrue(true);
     }
 }
