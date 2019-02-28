@@ -27,11 +27,8 @@ class DynamoDBSessionAwsClientTest extends TestCase
      */
     public function setUp()
     {
-
         foreach ($this->envvars as $env) {
-
             $this->env[$env] = getenv($env);
-
         }
         parent::setUp();
     }
@@ -42,7 +39,12 @@ class DynamoDBSessionAwsClientTest extends TestCase
     public function tearDown()
     {
         foreach ($this->envvars as $env) {
-            putenv($env . '=' . $this->env[$env]);
+            if ($this->env[$env] === false) {
+                putenv($env );
+            }
+            else {
+                putenv($env . '=' . $this->env[$env]);
+            }
         }
     }
 
