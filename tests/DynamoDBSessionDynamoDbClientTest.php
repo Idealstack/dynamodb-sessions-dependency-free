@@ -79,9 +79,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
     public function testReadWrite()
     {
-
-        //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
-
         $dynamoDbClient = $this->dynamoDbClient;
 
         $data = 'test' . rand(0, 10000000);
@@ -95,7 +92,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
     public function testDestroy()
     {
-
         $dynamoDbClient = $this->dynamoDbClient;
         $data = 'test' . rand(0, 10000000);
         $id = 'testkey' . rand(0, 10000000);
@@ -107,7 +103,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
         $result = $dynamoDbClient->read($id);
         $this->assertEmpty($result);
-
     }
 
 
