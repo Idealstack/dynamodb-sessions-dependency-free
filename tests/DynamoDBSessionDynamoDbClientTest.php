@@ -12,24 +12,35 @@ require_once(__DIR__ . '/../src/DynamoDbSessionHandler.php');
  */
 class DynamoDBSessionDynamoDbClientTest extends TestCase
 {
+    private $credentials;
+
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
         $file = '.env.testing';
-        if (file_exists(__DIR__ . '/../'. $file)) {
+        if (file_exists(__DIR__ . '/../' . $file)) {
             $dotenv = new \Dotenv\Dotenv(__DIR__ . '/../', $file);
             $dotenv->load();
         }
 
-        $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
+        $this->credentials = [
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
-            'credentials' => [
+
+        ];
+
+        if (getenv('SESSION_AWS_ACCESS_KEY_ID')) {
+            $this->credentials['credentials'] = [
                 'key' => getenv('SESSION_AWS_ACCESS_KEY_ID'),
                 'secret' => getenv('SESSION_AWS_SECRET_ACCESS_KEY')
-            ],
-            'table_name' => getenv('SESSION_TABLE')
+            ];
+        }
+
+
+        $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
+            $this->credentials +
+            ['table_name' => getenv('SESSION_TABLE')]
         ]);
 
     }
@@ -37,19 +48,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
     public function testReadWriteWithTemporaryCredentials()
     {
-
-
-        $stsClient = new \Aws\Sts\StsClient(
-            [
-                'region' => getenv('AWS_REGION'),
-                'version' => 'latest',
-                'credentials' => [
-                    'key' => getenv('SESSION_AWS_ACCESS_KEY_ID'),
-                    'secret' => getenv('SESSION_AWS_SECRET_ACCESS_KEY')
-                ]
-            ]
-        );
-
+        $stsClient = new \Aws\Sts\StsClient($this->credentials);
 
         $result = $stsClient->getSessionToken([
             'DurationSeconds' => 1800
