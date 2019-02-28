@@ -200,7 +200,7 @@ class AwsClient
      * Return an array of AWS connection details
      * @return array
      */
-    public function getCredentials()
+    private function getCredentials()
     {
         return $this->runOnce('credentials', function () {
             if (array_key_exists('credentials', $this->config)) {
@@ -208,7 +208,7 @@ class AwsClient
                 $this->debugPrint('Using manually set credentials');
                 return $this->config['credentials'];
             } elseif (getenv(self::ENV_KEY) !== false) {
-                $this->debugPrint('Using credentials from the environment');
+                $this->debugPrint('Using credentials from the environment: '.getenv(self::ENV_KEY));
                 $credentials = [
                     'key' => getenv(self::ENV_KEY),
                     'secret' => getenv(self::ENV_SECRET)
@@ -241,7 +241,7 @@ class AwsClient
      *
      * @return callable
      */
-    public static function ini($profile = null, $filename = null)
+    private static function ini($profile = null, $filename = null)
     {
         $filename = $filename ?: getenv(self::ENV_FILENAME) ? getenv(self::ENV_FILENAME) : self::getHomeDir() . '/.aws/credentials';
         $profile = $profile ?: (getenv(self::ENV_PROFILE) ?: 'default');
@@ -404,7 +404,7 @@ class AwsClient
     }
 
     /** Construct the AWS request */
-    protected function getAwsRequestHeaders($method, $uri, $params, $headers, $body, $date = null)
+    private function getAwsRequestHeaders($method, $uri, $params, $headers, $body, $date = null)
     {
         if (is_null($date)) {
             $date = time();
@@ -456,7 +456,7 @@ class AwsClient
     }
 
 
-    public function awsRequest($action, $params)
+    protected function awsRequest($action, $params)
     {
         $endpoint = 'https://' . strtolower($this->service) . '.' . $this->region . '.amazonaws.com/';
 
