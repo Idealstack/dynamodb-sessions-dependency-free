@@ -26,7 +26,7 @@ enabled in PHP
 # Why do you want this?
 Possibly you don't.  The [AWS SDK includes a session handler](https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/service_dynamodb-session-handler.html) that is maintained by AWS and might be a better choice for most people.
 
-Why do you want to store session in dynamodb? If you are running PHP in a clustered environment the default file-based
+Why do you want to store sessions in dynamodb? If you are running PHP in a clustered environment the default file-based
 session handler won't work.  
 
 You can store sessions in an SQL database, or redis but in many ways dynamodb is a better choice on AWS.  
