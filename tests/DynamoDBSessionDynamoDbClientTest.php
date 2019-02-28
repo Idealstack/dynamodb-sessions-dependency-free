@@ -17,8 +17,10 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $file = '.env.testing';
-        $dotenv = new \Dotenv\Dotenv(__DIR__ . '/../', $file);
-        $dotenv->load();
+        if (file_exists(__DIR__ . '/../'. $file)) {
+            $dotenv = new \Dotenv\Dotenv(__DIR__ . '/../', $file);
+            $dotenv->load();
+        }
 
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
             'region' => getenv('AWS_REGION'),
