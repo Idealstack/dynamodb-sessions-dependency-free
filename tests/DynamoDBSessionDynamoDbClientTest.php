@@ -120,23 +120,24 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
      */
     public function testPerformance()
     {
+$table_name = getenv('SESSION_TABLE');
 
-        //Now compare with the performance of the SDK
-        $dynamodb = new \Aws\DynamoDb\DynamoDbClient(
-            $this->credentials
-        );
-        $dynamoDbClient =  \Aws\DynamoDb\SessionHandler::fromClient(
-            $dynamodb,
-
-            $this->credentials +
-            [
-                'table_name' => getenv('SESSION_TABLE'),
-            ]
-        );
 
         $i = 0;
         $start = microtime(true);
         while ($i++ < 20) {
+            //Now compare with the performance of the SDK
+            $dynamodb = new \Aws\DynamoDb\DynamoDbClient(
+                $this->credentials
+            );
+            $dynamoDbClient =  \Aws\DynamoDb\SessionHandler::fromClient(
+                $dynamodb,
+
+                $this->credentials +
+                [
+                    'table_name' => $table_name,
+                ]
+            );
             $data = 'test' . $i;
             $dynamoDbClient->write('TEST', $data);
             $result = $dynamoDbClient->read('TEST');
@@ -147,10 +148,14 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         echo "Time to read and write 20 sessions in seconds (SDK): " . ($end - $start);
 
 
-        $dynamoDbClient = $this->dynamoDbClient;
         $i = 0;
         $start = microtime(true);
         while ($i++ < 20) {
+            $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
+                $this->credentials +
+                ['table_name' => $table_name]
+            );
+
             $data = 'test' . $i;
             $dynamoDbClient->write('TEST', $data);
             $result = $dynamoDbClient->read('TEST');
@@ -165,12 +170,5 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $this->assertTrue( $time_dependency_free - $time_sdk  < 0.2*$time_sdk, "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)");
     }
 
-    /**
-     * Test the official client for comparison
-     */
-    public function testPerformanceAwsSdk()
-    {
 
-
-    }
 }
