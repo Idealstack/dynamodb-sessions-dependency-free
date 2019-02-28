@@ -44,12 +44,12 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
     }
 
-
+    /**
+     * Test the client works with temporary security credentials
+     */
     public function testReadWriteWithTemporaryCredentials()
     {
         $stsClient = new \Aws\Sts\StsClient($this->credentials);
-
-
 
         if (getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI')) {
             //This means we are already using temporary credentials, so skip this test
@@ -60,7 +60,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $result = $stsClient->getSessionToken([
             'DurationSeconds' => 1800
         ])->toArray();
-
 
         $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
             'region' => getenv('AWS_REGION'),
@@ -73,8 +72,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
             'table_name' => getenv('SESSION_TABLE')
         ]);
 
-        //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
-
         $data = 'test' . rand(0, 10000000);
         $result = $dynamoDbClient->write('TEST', $data);
         $this->assertTrue($result);
@@ -83,7 +80,9 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-
+    /**
+     * Test reading and writing sessions works
+     */
     public function testReadWrite()
     {
         $dynamoDbClient = $this->dynamoDbClient;
@@ -96,7 +95,9 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-
+    /**
+     * Test destroying sessions works
+     */
     public function testDestroy()
     {
         $dynamoDbClient = $this->dynamoDbClient;
@@ -111,6 +112,4 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $result = $dynamoDbClient->read($id);
         $this->assertEmpty($result);
     }
-
-
 }

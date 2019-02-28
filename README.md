@@ -3,6 +3,9 @@
 </a>
 
 # dynamodb-sessions-dependency-free
+
+<img src="https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVjRSR08rOXNua2IyeWUwZDVPemk3MUNjc09EMUg1aWJlTmR4MCtvNUZOTzNVbXJnbXpxN1VoTEV1QituaGNJSlgybTlhOEJseGJZSGNlZVo5TkFER1prPSIsIml2UGFyYW1ldGVyU3BlYyI6Ik5jd3pmZU1hclIzVmx3V3IiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master" />
+
 An implementation of a session handler for storing sessions in dynamoDB, 
 but with no dependencies on the AWS SDK, Guzzle etc.  
 

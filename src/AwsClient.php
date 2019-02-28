@@ -55,9 +55,7 @@ class AwsClient
     }
 
     /**
-     * Wrapper for easy cURLing
-     *
-     * @author Viliam Kopecký
+     * Make an HTTP request using curl
      *
      * @param string HTTP method (GET|POST|PUT|DELETE)
      * @param string URI
@@ -490,7 +488,6 @@ class AwsClient
         return $decoded_result;
     }
 }
-
 
 class AwsClientException extends \Exception
 {

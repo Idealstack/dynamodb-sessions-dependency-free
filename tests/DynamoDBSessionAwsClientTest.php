@@ -40,14 +40,19 @@ class DynamoDBSessionAwsClientTest extends TestCase
     {
         foreach ($this->envvars as $env) {
             if ($this->env[$env] === false) {
-                putenv($env );
-            }
-            else {
+                putenv($env);
+            } else {
                 putenv($env . '=' . $this->env[$env]);
             }
         }
     }
 
+    /**
+     * Test fetching the AWS credentials
+     *
+     * @throws ReflectionException
+     * @throws \Idealstack\DynamoDbSessionsDependencyFree\AwsClientException
+     */
     public function testCredentials()
     {
         //Make the credentials method public so we can test it
@@ -185,10 +190,16 @@ aws_secret_access_key = TEST4
         $this->assertEquals("c4afb1cc5771d871763a393e44b703571b55cc28424d1a5e86da6ed3c154a4b9", bin2hex($result));
     }
 
+    /**
+     * Test that the 'canonical request' used in the AWS signature algorithm matches the example in
+     * https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
+     * @throws ReflectionException
+     * @throws \Idealstack\DynamoDbSessionsDependencyFree\AwsClientException
+     */
+
     public function testCanonicalRequest()
     {
 
-        //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
 
         $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
@@ -239,10 +250,15 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
     }
 
+    /**
+     * Test the AWS request headers match the example in
+     * https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
+     *
+     * @throws ReflectionException
+     * @throws \Idealstack\DynamoDbSessionsDependencyFree\AwsClientException
+     */
     public function testAwsRequestHeaders()
     {
-
-        //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html
 
         $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
@@ -276,5 +292,4 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         $expected_auth_header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, SignedHeaders=host;x-amz-date, Signature=b97d918cfa904a5beff61c982a1b6f458b799221646efd99d3219ec94cdf2500";
         $this->assertEquals($expected_auth_header, $headers['Authorization']);
     }
-
 }
