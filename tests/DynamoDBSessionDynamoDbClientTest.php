@@ -41,7 +41,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
             $this->credentials +
             ['table_name' => getenv('SESSION_TABLE')]
-        ]);
+        );
 
     }
 
