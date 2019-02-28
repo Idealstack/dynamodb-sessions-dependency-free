@@ -120,18 +120,57 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
      */
     public function testPerformance()
     {
-        $dynamoDbClient = $this->dynamoDbClient;
+
+        //Now compare with the performance of the SDK
+        $dynamodb = new \Aws\DynamoDb\DynamoDbClient(
+            $this->credentials
+        );
+        $dynamoDbClient =  \Aws\DynamoDb\SessionHandler::fromClient(
+            $dynamodb,
+
+            $this->credentials +
+            [
+                'table_name' => getenv('SESSION_TABLE'),
+            ]
+        );
 
         $i = 0;
         $start = microtime(true);
-        while ($i++ < 50) {
+        while ($i++ < 20) {
             $data = 'test' . $i;
             $dynamoDbClient->write('TEST', $data);
             $result = $dynamoDbClient->read('TEST');
             $this->assertEquals($data, $result);
         }
         $end = microtime(true);
-        echo "Time to read and write 50 sessions in seconds: " . ($end - $start);
-        $this->assertTrue(true);
+        $time_sdk = $end - $start;
+        echo "Time to read and write 20 sessions in seconds (SDK): " . ($end - $start);
+
+
+        $dynamoDbClient = $this->dynamoDbClient;
+        $i = 0;
+        $start = microtime(true);
+        while ($i++ < 20) {
+            $data = 'test' . $i;
+            $dynamoDbClient->write('TEST', $data);
+            $result = $dynamoDbClient->read('TEST');
+            $this->assertEquals($data, $result);
+        }
+        $end = microtime(true);
+        echo "Time to read and write 20 sessions in seconds: (Dependency-Free)" . ($end - $start);
+        $time_dependency_free = $end- $start;
+
+
+        //Our client should be with 20% of the native client
+        $this->assertTrue( $time_dependency_free - $time_sdk  < 0.2*$time_sdk, "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)");
+    }
+
+    /**
+     * Test the official client for comparison
+     */
+    public function testPerformanceAwsSdk()
+    {
+
+
     }
 }

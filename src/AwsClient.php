@@ -32,6 +32,9 @@ class AwsClient
     protected $cache = [];
     protected $version = '20120810';
 
+    /** @var false|resource Curl handle */
+    protected $curl;
+
     public function __construct($config)
     {
 
@@ -52,6 +55,26 @@ class AwsClient
         } else {
             throw new AwsClientException('No region specified');
         }
+
+
+        $this->curl = curl_init();
+
+        // defaults
+        $default_curl_options = array(
+            CURLOPT_ENCODING => 'gzip,deflate',
+            CURLOPT_HEADER => 1,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_CONNECTTIMEOUT => 15,
+            CURLOPT_TIMEOUT => 30,
+        );
+
+
+        if($this->config['debug']) {
+            $default_curl_options[CURLINFO_HEADER_OUT] =  true;
+        }
+
+        // apply default options
+        curl_setopt_array($this->curl, $default_curl_options);
     }
 
     /**
@@ -72,57 +95,43 @@ class AwsClient
             $curl_headers[] = "$header: $value";
         }
 
-        // defaults
-        $default_curl_options = array(
-            CURLOPT_URL => $uri,
-            CURLOPT_ENCODING => 'gzip,deflate',
-            CURLOPT_HEADER => 1,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_TIMEOUT => 30,
-        );
-
-
-        if($this->config['debug']) {
-            $default_curl_options[CURLINFO_HEADER_OUT] =  true;
-        }
         $default_headers = array();
 
         // validate input
         $method = strtoupper(trim($method));
 
         // init
-        $curl = curl_init();
-        // apply default options
-        curl_setopt_array($curl, $default_curl_options);
+        curl_setopt($this->curl, CURLOPT_URL, $uri);
+
 
         // apply method specific options
         switch ($method) {
             case 'GET':
+                curl_setopt($this->curl, CURLOPT_POST, 0);
                 break;
             case 'POST':
-                curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($this->curl, CURLOPT_POST, 1);
+                curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
                 $curl_headers[] = "Content-length: " . strlen($data);
                 break;
             case 'PUT':
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+                curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
                 $curl_headers[] = "Content-length: " . strlen($data);
                 break;
             case 'DELETE':
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+                curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
                 break;
         }
 
         // apply user options
-        curl_setopt_array($curl, $curl_options);
+        curl_setopt_array($this->curl, $curl_options);
 
         // add headers
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array_merge($default_headers, $curl_headers));
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, array_merge($default_headers, $curl_headers));
 
         // parse result
-        $raw = rtrim(curl_exec($curl));
+        $raw = rtrim(curl_exec($this->curl));
         $lines = explode("\r\n", $raw);
         $headers = array();
         $content = '';
@@ -141,21 +150,16 @@ class AwsClient
             }
         }
 
-        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $error = curl_error($curl);
+        $httpcode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $error = curl_error($this->curl);
 
         if ($this->config['debug']) {
-            $info = curl_getinfo($curl);
+            $info = curl_getinfo($this->curl);
             echo "Request: ";
             print_r($info);
-
-
             echo "Response: ";
             echo $raw;
-
-        }
-
-        curl_close($curl);
+       }
 
         // return
         return array(
@@ -175,7 +179,6 @@ class AwsClient
      */
     private function runOnce($key, $func)
     {
-        $key = spl_object_hash($this) . $key;
         if (!isset($this->cache[$key])) {
             $this->cache[$key] = $func();
         }

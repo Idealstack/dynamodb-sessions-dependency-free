@@ -23,6 +23,7 @@ class DynamoDbClient extends AwsClient
         'ProvisionedThroughputExceededException',
         'RequestLimitExceeded',
         'ThrottlingException',
+        'ServiceUnavailableException'
     ];
 
     public function __call($name, $arguments)
