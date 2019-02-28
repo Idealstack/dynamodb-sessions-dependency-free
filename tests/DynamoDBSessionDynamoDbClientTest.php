@@ -120,9 +120,9 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
      */
     public function testPerformance()
     {
-$table_name = getenv('SESSION_TABLE');
+        $table_name = getenv('SESSION_TABLE');
 
-
+        // Test the performance of the official AWS SDK, as a baseline
         $i = 0;
         $start = microtime(true);
         while ($i++ < 20) {
@@ -130,7 +130,7 @@ $table_name = getenv('SESSION_TABLE');
             $dynamodb = new \Aws\DynamoDb\DynamoDbClient(
                 $this->credentials
             );
-            $dynamoDbClient =  \Aws\DynamoDb\SessionHandler::fromClient(
+            $dynamoDbClient = \Aws\DynamoDb\SessionHandler::fromClient(
                 $dynamodb,
 
                 $this->credentials +
@@ -148,6 +148,7 @@ $table_name = getenv('SESSION_TABLE');
         echo "Time to read and write 20 sessions in seconds (SDK): " . ($end - $start);
 
 
+        //Test the performance of our session handler
         $i = 0;
         $start = microtime(true);
         while ($i++ < 20) {
@@ -163,11 +164,12 @@ $table_name = getenv('SESSION_TABLE');
         }
         $end = microtime(true);
         echo "Time to read and write 20 sessions in seconds: (Dependency-Free)" . ($end - $start);
-        $time_dependency_free = $end- $start;
+        $time_dependency_free = $end - $start;
 
 
-        //Our client should be with 20% of the native client
-        $this->assertTrue( $time_dependency_free - $time_sdk  < 0.2*$time_sdk, "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)");
+        //Our client should be within 20% of the native client (typically we're a lot faster, but network variations etc
+        $this->assertTrue($time_dependency_free - $time_sdk < 0.2 * $time_sdk,
+            "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)");
     }
 
 
