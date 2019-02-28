@@ -12,8 +12,15 @@ require_once(__DIR__ . '/../src/AwsClient.php');
  */
 class DynamoDBSessionAwsClientTest extends TestCase
 {
-    private $env ;
-    private $envvars = ['AWS_CONTAINER_CREDENTIALS_RELATIVE_URI', 'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_CREDENTIALS_FILENAME'] ;
+    private $env = [];
+
+    /** @var array Vars we will monkey with in the test and need to save/restore */
+    private $envvars = [
+        'AWS_CONTAINER_CREDENTIALS_RELATIVE_URI',
+        'AWS_ACCESS_KEY_ID',
+        'AWS_SECRET_ACCESS_KEY',
+        'AWS_CREDENTIALS_FILENAME'
+    ];
 
     /**
      * Save the environment
@@ -21,7 +28,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
     public function setUp()
     {
 
-        foreach($this->envvars as $env) {
+        foreach ($this->envvars as $env) {
 
             $this->env[$env] = getenv($env);
 
@@ -34,9 +41,8 @@ class DynamoDBSessionAwsClientTest extends TestCase
      */
     public function tearDown()
     {
-        foreach($this->envvars as $env) {
-            putenv($env.'='.$this->env[$env]);
-
+        foreach ($this->envvars as $env) {
+            putenv($env . '=' . $this->env[$env]);
         }
     }
 
@@ -80,9 +86,13 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
         $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
-           [ [ 'region' => getenv('AWS_REGION'),
-                'version' => 'latest',]]
-            )->makePartial();
+            [
+                [
+                    'region' => getenv('AWS_REGION'),
+                    'version' => 'latest',
+                ]
+            ]
+        )->makePartial();
         $mock->shouldReceive('curl')->andReturn(
             [
                 'content' => json_encode([
@@ -104,8 +114,12 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
         $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
-            [ [ 'region' => getenv('AWS_REGION'),
-                'version' => 'latest',]]
+            [
+                [
+                    'region' => getenv('AWS_REGION'),
+                    'version' => 'latest',
+                ]
+            ]
         )->makePartial();
         $mock->shouldReceive('curl')->andReturn(
             [

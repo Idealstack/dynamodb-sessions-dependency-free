@@ -27,7 +27,6 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $this->credentials = [
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
-
         ];
 
         if (getenv('SESSION_AWS_ACCESS_KEY_ID')) {
@@ -37,10 +36,10 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
             ];
         }
 
-
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
             $this->credentials +
-            ['table_name' => getenv('SESSION_TABLE')]
+            ['table_name' => getenv('SESSION_TABLE'),
+                'debug' => true]
         );
 
     }

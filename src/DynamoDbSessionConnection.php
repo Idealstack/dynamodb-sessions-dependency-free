@@ -22,7 +22,7 @@ class DynamoDbSessionConnection extends AwsClient {
                 'hash_key'         => 'id',
                 'session_lifetime' => (int) ini_get('session.gc_maxlifetime'),
                 'consistent_read'  => true,
-                'batch_config'     => [],
+                'batch_config'     => []
             ];
     }
 

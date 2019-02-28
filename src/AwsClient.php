@@ -34,6 +34,11 @@ class AwsClient
 
     public function __construct($config)
     {
+
+        $config += [
+            'debug' => false
+        ];
+
         $this->config = $config;
 
         if (array_key_exists('service', $config)) {
@@ -76,9 +81,13 @@ class AwsClient
             CURLOPT_HEADER => 1,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_CONNECTTIMEOUT => 15,
-            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_TIMEOUT => 30,
         );
 
+
+        if($this->config['debug']) {
+            $default_curl_options[CURLINFO_HEADER_OUT] =  true;
+        }
         $default_headers = array();
 
         // validate input
@@ -136,6 +145,17 @@ class AwsClient
 
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $error = curl_error($curl);
+
+        if ($this->config['debug']) {
+            $info = curl_getinfo($curl);
+            echo "Request: ";
+            print_r($info);
+
+
+            echo "Response: ";
+            echo $raw;
+
+        }
 
         curl_close($curl);
 
