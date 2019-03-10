@@ -7,10 +7,13 @@
 <img src="https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVjRSR08rOXNua2IyeWUwZDVPemk3MUNjc09EMUg1aWJlTmR4MCtvNUZOTzNVbXJnbXpxN1VoTEV1QituaGNJSlgybTlhOEJseGJZSGNlZVo5TkFER1prPSIsIml2UGFyYW1ldGVyU3BlYyI6Ik5jd3pmZU1hclIzVmx3V3IiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master" />
 
 An implementation of a session handler for storing sessions in dynamoDB, 
-but with no dependencies on the AWS SDK, Guzzle etc.  
+but with no dependencies on the AWS SDK, Guzzle etc.  As a bonus it's also faster!
 
 The [Idealstack](https://idealstack.io) AWS hosting platform uses this to provide transparent support for DynamoDB 
 sessions, so users don't need to change anything in their code.  
+
+See our [blog post](https://idealstack.io/blog/faster-dependency-free-php-sessions-dynamodb) about it for instructions on how to use it, setup the required tables etc
+
 # Features
 
 - Essentially  a drop-in replacement for the official session handler in the AWS SDK
@@ -61,7 +64,7 @@ https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/service_dynamodb-sess
 
 You configure the DynamoDB table the same as the AWS SDK docs recommend.  However we'd suggest you also use the 
 DynamoDB 'ttl' capability to garbage collect your sessions.  Set that on the 'expires' field (this also works with 
-the native SDK)
+the native SDK).  See the [notes in our blog post](https://idealstack.io/blog/faster-dependency-free-php-sessions-dynamodb) about how to setup the table.
 
 ````php
 use Idealstack\DynamoDbSessionHandlerDependencyFree;
