@@ -107,9 +107,10 @@ use Idealstack\DynamoDbSessionHandlerDependencyFree;
 
 # Development
 There is a docker environment to test with, using local dynamodb 
-`tools/setup` - setup the container and database etc
-`tools/test` - run the unit tests
-`tools/console` - run a console
+
+- `tools/setup` - setup the container and database etc
+- `tools/test` - run the unit tests
+- `tools/console` - run a console
 
 To use XDebug
 
