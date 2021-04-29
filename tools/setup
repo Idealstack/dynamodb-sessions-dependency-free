@@ -2,11 +2,8 @@
 DIR="$( cd "$( dirname "$(realpath "${BASH_SOURCE[0]}")" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
 docker-compose up -d
-if [[ ! -e $DIR/../vendor ]]; then
-    echo "Running composer-install"
-    docker-compose run php 'composer install --no-progress --no-suggest'
-fi
-
+echo "Running composer-install"
+docker-compose run php composer install --no-progress --no-suggest
 
 docker-compose run aws-cli dynamodb create-table  \
     --table-name php-sessions  \
