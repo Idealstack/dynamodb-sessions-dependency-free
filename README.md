@@ -62,9 +62,14 @@ Configuration is the same as the AWS SDK version, so read their docs:
 
 https://docs.aws.amazon.com/sdk-for-php/v3/developer-guide/service_dynamodb-session-handler.html
 
+
+
+## Creating the table
 You configure the DynamoDB table the same as the AWS SDK docs recommend.  However we'd suggest you also use the 
 DynamoDB 'ttl' capability to garbage collect your sessions.  Set that on the 'expires' field (this also works with 
 the native SDK).  See the [notes in our blog post](https://idealstack.io/blog/faster-dependency-free-php-sessions-dynamodb) about how to setup the table.
+
+## Using it in your code 
 
 ````php
 use Idealstack\DynamoDbSessionHandlerDependencyFree;
@@ -95,4 +100,20 @@ use Idealstack\DynamoDbSessionHandlerDependencyFree;
         ]
 
 ))->register();
+````
+
+
+# Development
+There is a docker environment to test with, using local dynamodb 
+`tools/setup` - setup the container and database etc
+`tools/test` - run the unit tests
+`tools/console` - run a console
+
+To use XDebug
+
+```
+tools/console
+tools/install-xdebug
+composer install
+vendor/bin/phpunit
 ````

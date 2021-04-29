@@ -1,0 +1,118 @@
+version: "3.1"
+services:
+  # Local dynamodb
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar  -inMemory "
+    image: "amazon/dynamodb-local:latest"
+
+  # Create the Dynamodb tables
+  aws-cli:
+    environment: 
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    depends_on:
+      - dynamodb-local
+    image: "amazon/aws-cli"
+
+  # A PHP container we can test in 
+  php:
+    depends_on:
+      - dynamodb-local
+    build: .
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+    
+ 
+  # A PHP container we can test in 
+  php5:
+    depends_on:
+      - dynamodb-local
+    image: php:5-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+    
+  php8:
+    depends_on:
+      - dynamodb-local
+    image: php:8-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+
+  php7.1:
+    depends_on:
+      - dynamodb-local
+    image: php:7.1-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+
+  php7.2:
+    depends_on:
+      - dynamodb-local
+    image: php:7.2-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+
+  php7.3:
+    depends_on:
+      - dynamodb-local
+    image: php:7.1-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+
+  php7.4:
+    depends_on:
+      - dynamodb-local
+    image: php:7.1-cli
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html

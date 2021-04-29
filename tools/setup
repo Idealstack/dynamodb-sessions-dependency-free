@@ -1,0 +1,13 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "$(realpath "${BASH_SOURCE[0]}")" )" >/dev/null 2>&1 && pwd )"
+cd $DIR
+docker-compose up -d
+echo "Running composer-install"
+docker-compose run php composer install --no-progress --no-suggest
+
+docker-compose run aws-cli dynamodb create-table  \
+    --table-name php-sessions  \
+    --attribute-definitions AttributeName=id,AttributeType=S  \
+    --key-schema AttributeName=id,KeyType=HASH  \
+    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+    --endpoint-url=http://dynamodb-local:8000

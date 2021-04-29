@@ -92,7 +92,8 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_ACCESS_KEY_ID');
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
-        $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
+        $mock = Mockery::mock(
+            Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
             [
                 [
                     'region' => getenv('AWS_REGION'),
@@ -120,7 +121,8 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_ACCESS_KEY_ID');
         putenv('AWS_SECRET_ACCESS_KEY');
         putenv('AWS_CREDENTIALS_FILENAME=/tmp/fake');
-        $mock = Mockery::mock(Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
+        $mock = Mockery::mock(
+            Idealstack\DynamoDbSessionsDependencyFree\AwsClient::class,
             [
                 [
                     'region' => getenv('AWS_REGION'),
@@ -150,7 +152,8 @@ class DynamoDBSessionAwsClientTest extends TestCase
         putenv('AWS_SECRET_ACCESS_KEY');
 
 
-        file_put_contents('/tmp/test-credentials.ini',
+        file_put_contents(
+            '/tmp/test-credentials.ini',
             "[default]           
 aws_access_key_id = TEST4
 aws_secret_access_key = TEST4
@@ -166,7 +169,6 @@ aws_secret_access_key = TEST4
         putenv('AWS_CREDENTIALS_FILENAME');
         $this->assertEquals('TEST4', $credentials['key']);
         putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI=' . $old_env);
-
     }
 
     /**
@@ -215,7 +217,8 @@ aws_secret_access_key = TEST4
         $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getCanonicalRequest');
         $method->setAccessible(true);
 
-        $result = $method->invoke($AwsClient,
+        $result = $method->invoke(
+            $AwsClient,
             'GET',
             'https://example.amazonaws.com',
             [
@@ -226,7 +229,8 @@ aws_secret_access_key = TEST4
                 'X-Amz-Date' => '20150830T123600Z'
             ],
             '',
-            strtotime('20150830T123600Z'));
+            strtotime('20150830T123600Z')
+        );
 
 
         $canonical_request_string = "GET
@@ -243,11 +247,11 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         $this->assertEquals($canonical_request_string, $result['CanonicalRequest']);
 
         //Hash it
-        $this->assertEquals($canonical_request_string_hash,
+        $this->assertEquals(
+            $canonical_request_string_hash,
             hash('sha256', $result['CanonicalRequest'])
 
         );
-
     }
 
     /**
@@ -274,17 +278,18 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         $method->setAccessible(true);
 
 
-        $headers = $method->invoke($AwsClient,
+        $headers = $method->invoke(
+            $AwsClient,
             'GET',
             'https://example.amazonaws.com',
             [
                 'Param2' => 'value2',
                 'Param1' => 'value1'
             ],
-            [
-            ],
+            [],
             '',
-            strtotime('20150830T123600Z'));
+            strtotime('20150830T123600Z')
+        );
 
         //Check versus the example in https://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html
         $this->assertEquals('20150830T123600Z', $headers['X-Amz-Date']);

@@ -1,6 +1,10 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use Aws\CommandInterface;
+use Aws\Result;
+use Psr\Http\Message\RequestInterface;
+use GuzzleHttp\Promise;
 
 require_once(__DIR__ . '/../src/DynamoDbSessionHandler.php');
 
@@ -12,7 +16,7 @@ require_once(__DIR__ . '/../src/DynamoDbSessionHandler.php');
  */
 class DynamoDBSessionDynamoDbClientTest extends TestCase
 {
-    private $credentials;
+    private $config;
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -24,26 +28,27 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
             $dotenv->load();
         }
 
-        $this->credentials = [
+        $this->config = [
             'region' => getenv('AWS_REGION'),
             'version' => 'latest',
+            'table_name' => getenv('SESSION_TABLE'),
+            'debug' => getenv('SESSION_DEBUG') ? getenv('SESSION_DEBUG') : false
         ];
 
+        if (getenv('DYNAMODB_ENDPOINT')) {
+            $this->config['endpoint'] = getenv('DYNAMODB_ENDPOINT');
+        }
+
         if (getenv('SESSION_AWS_ACCESS_KEY_ID')) {
-            $this->credentials['credentials'] = [
+            $this->config['credentials'] = [
                 'key' => getenv('SESSION_AWS_ACCESS_KEY_ID'),
                 'secret' => getenv('SESSION_AWS_SECRET_ACCESS_KEY')
             ];
         }
 
         $this->dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
-            $this->credentials +
-            [
-                'table_name' => getenv('SESSION_TABLE'),
-                'debug' => getenv('SESSION_DEBUG') ? getenv('SESSION_DEBUG') : false
-            ]
+            $this->config
         );
-
     }
 
     /**
@@ -51,10 +56,22 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
      */
     public function testReadWriteWithTemporaryCredentials()
     {
-        $stsClient = new \Aws\Sts\StsClient($this->credentials);
 
-        if (getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI')) {
-            //This means we are already using temporary credentials, so skip this test
+        $myHandler = function (CommandInterface $cmd, RequestInterface $request) {
+            $result = new Result(['Credentials' => [
+                'AccessKeyId' => 'DUMMYCREDENTIALS',
+                'SecretAccessKey' => 'DUMMYSECRETACCESSKEY',
+                'SessionToken' => 'DUMMYTOKEN'
+            ]]);
+            return Promise\promise_for($result);
+        };
+        $stsClient = new \Aws\Sts\StsClient($this->config + ['handler' => $myHandler]);
+
+        if (
+            getenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI') //This means we are already using temporary credentials, so skip this test
+            || getenv('DYNAMODB_ENDPOINT')  // Temp credentials don't seem to work against the local endpoint 
+        ) {
+
             $this->markTestSkipped();
             return;
         }
@@ -63,16 +80,18 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
             'DurationSeconds' => 1800
         ])->toArray();
 
-        $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler([
-            'region' => getenv('AWS_REGION'),
-            'version' => 'latest',
-            'credentials' => [
-                'key' => $result['Credentials']['AccessKeyId'],
-                'secret' => $result['Credentials']['SecretAccessKey'],
-                'token' => $result['Credentials']['SessionToken']
-            ],
-            'table_name' => getenv('SESSION_TABLE')
-        ]);
+
+        $credentials = [
+            'key' => $result['Credentials']['AccessKeyId'],
+            'secret' => $result['Credentials']['SecretAccessKey'],
+            'token' => $result['Credentials']['SessionToken']
+        ];
+
+        $config = $this->config + [
+            'credentials' => $credentials,
+        ];
+
+        $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler($config);
 
         $data = 'test' . rand(0, 10000000);
         $result = $dynamoDbClient->write('TEST', $data);
@@ -128,15 +147,11 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         while ($i++ < 20) {
             //Now compare with the performance of the SDK
             $dynamodb = new \Aws\DynamoDb\DynamoDbClient(
-                $this->credentials
+                $this->config
             );
             $dynamoDbClient = \Aws\DynamoDb\SessionHandler::fromClient(
                 $dynamodb,
-
-                $this->credentials +
-                [
-                    'table_name' => $table_name,
-                ]
+                $this->config
             );
             $data = 'test' . $i;
             $dynamoDbClient->write('TEST', $data);
@@ -153,8 +168,7 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
         $start = microtime(true);
         while ($i++ < 20) {
             $dynamoDbClient = new Idealstack\DynamoDbSessionsDependencyFree\DynamoDbSessionHandler(
-                $this->credentials +
-                ['table_name' => $table_name]
+                $this->config
             );
 
             $data = 'test' . $i;
@@ -168,9 +182,9 @@ class DynamoDBSessionDynamoDbClientTest extends TestCase
 
 
         //Our client should be within 20% of the native client (typically we're a lot faster, but network variations etc
-        $this->assertTrue($time_dependency_free - $time_sdk < 0.2 * $time_sdk,
-            "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)");
+        $this->assertTrue(
+            $time_dependency_free - $time_sdk < 0.2 * $time_sdk,
+            "Our client is within  20% of the performance of the SDK - $time_dependency_free(Us) versus $time_sdk(SDK)"
+        );
     }
-
-
 }
