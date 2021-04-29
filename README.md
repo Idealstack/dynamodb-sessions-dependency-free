@@ -1,6 +1,6 @@
-[![CI](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml/badge.svg)](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml)
 
 # dynamodb-sessions-dependency-free
+[![CI](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml/badge.svg)](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml)
 
 <img src="https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVjRSR08rOXNua2IyeWUwZDVPemk3MUNjc09EMUg1aWJlTmR4MCtvNUZOTzNVbXJnbXpxN1VoTEV1QituaGNJSlgybTlhOEJseGJZSGNlZVo5TkFER1prPSIsIml2UGFyYW1ldGVyU3BlYyI6Ik5jd3pmZU1hclIzVmx3V3IiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master" />
 
