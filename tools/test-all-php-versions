@@ -4,10 +4,12 @@ cd $DIR
 
 # Run tests in all PHP versions
 versions="php8 php7.4 php7.3 php7.2 php7.1 php5"
+
 for version in $versions; do
     docker-compose run $version 'vendor/bin/phpunit'
-    if [[ $? != 0 ]]; then
-        FAILURE=$?
+    RESULT=$?
+    if [[ "$RESULT" != 0 ]]; then
+        FAILURE=$RESULT
     fi
 done
 exit $FAILURE
