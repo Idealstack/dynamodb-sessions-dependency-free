@@ -1,6 +1,4 @@
-<a href="https://idealstack.io/">
-    <img src="https://idealstack.io/application/themes/idealstack/img/github-banner.svg" alt="Idealstack - the best way to run PHP on AWS" title="Idealstack - the best way to run PHP on AWS" align="right"  />
-</a>
+[![CI](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml/badge.svg)](https://github.com/Idealstack/dynamodb-sessions-dependency-free/actions/workflows/testing.yml)
 
 # dynamodb-sessions-dependency-free
 
