@@ -1,0 +1,13 @@
+#!/bin/bash
+DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" >/dev/null 2>&1 && pwd)"
+cd $DIR
+
+# Run tests in all PHP versions
+versions="php8 php7.4 php7.3 php7.2 php7.1 php5"
+for version in $versions; do
+    docker-compose run $version 'vendor/bin/phpunit'
+    if [[ $? > 0 ]]; then
+        FAILURE=$?
+    fi
+done
+exit $FAILURE

@@ -246,7 +246,7 @@ class AwsClient
      */
     private static function ini($profile = null, $filename = null)
     {
-        $filename = $filename ?: getenv(self::ENV_FILENAME) ? getenv(self::ENV_FILENAME) : self::getHomeDir() . '/.aws/credentials';
+        $filename = $filename ?: (getenv(self::ENV_FILENAME) ? getenv(self::ENV_FILENAME) : self::getHomeDir() . '/.aws/credentials');
         $profile = $profile ?: (getenv(self::ENV_PROFILE) ?: 'default');
 
         if (!is_readable($filename)) {

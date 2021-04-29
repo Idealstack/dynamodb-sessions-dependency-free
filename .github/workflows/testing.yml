@@ -17,7 +17,10 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-                
+            
+    - name: Setup test environment
+      run: ./tools/setup
+
     # Run the tests inside the docker image
     - name: Run unit tests
-      run: ./tools/test
+      run: ./tools/test-all-php-versions

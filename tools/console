@@ -2,8 +2,10 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "$(realpath "${BASH_SOURCE[0]}")" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
-docker-compose up -d 
-sleep 1 # Is there a better way to know when the service is ready?
-./create-local-table
 
-docker-compose run php bash -l
+if [[ -n $1 ]]; then
+    php=$1
+else 
+    php=php
+fi
+docker-compose run $php bash -l
