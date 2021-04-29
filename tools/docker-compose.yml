@@ -1,0 +1,34 @@
+version: "3.1"
+services:
+  # Local dynamodb
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar  -inMemory "
+    image: "amazon/dynamodb-local:latest"
+  # Create the Dynamodb tabls
+  aws-cli:
+    environment: 
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    depends_on:
+      - dynamodb-local
+    image: "amazon/aws-cli"
+
+  # A PHP container we can
+  php:
+    depends_on:
+      - dynamodb-local
+    build: .
+    environment: 
+      SESSION_TABLE: php-sessions
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000 # use our local dynamodb
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_REGION: 'eu-west-1'
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+    
+    # ports:
+      # - "8307:80"

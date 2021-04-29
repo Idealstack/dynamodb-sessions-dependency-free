@@ -1,0 +1,23 @@
+
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    
+jobs:
+  build:
+    #Dont run on draft PR's
+    if: github.event.pull_request.draft == false
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+                
+    # Run the tests inside the docker image
+    - name: Run unit tests
+      run: ./tools/test

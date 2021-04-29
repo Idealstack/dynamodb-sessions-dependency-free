@@ -1,0 +1,12 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "$(realpath "${BASH_SOURCE[0]}")" )" >/dev/null 2>&1 && pwd )"
+cd $DIR
+docker-compose up -d 
+sleep 1 # Is there a better way to know when the service is ready?
+if [[ ! -e $DIR/../vendor ]]; then
+    echo "Running composer-install"
+    docker-compose exec php 'composer install --no-progress --no-suggest'
+fi
+
+./create-local-table
+docker-compose run php 'vendor/bin/phpunit'

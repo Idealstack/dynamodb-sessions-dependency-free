@@ -22,6 +22,7 @@ class AwsClient
 
     const EC2_SERVER_URI = 'http://169.254.169.254/latest/';
     const CRED_PATH = 'meta-data/iam/security-credentials/';
+    const EC2_METADATA_TOKEN = 'latest/api/token';
 
     const ENV_DISABLE = 'AWS_EC2_METADATA_DISABLED';
 
@@ -31,6 +32,7 @@ class AwsClient
     protected $region;
     protected $cache = [];
     protected $version = '20120810';
+    protected static $imds2_token;
 
     /** @var false|resource Curl handle */
     protected $curl;
@@ -69,7 +71,7 @@ class AwsClient
         );
 
 
-        if($this->config['debug']) {
+        if ($this->config['debug']) {
             $default_curl_options[CURLINFO_HEADER_OUT] =  true;
         }
 
@@ -159,7 +161,7 @@ class AwsClient
             print_r($info);
             echo "Response: ";
             echo $raw;
-       }
+        }
 
         // return
         return array(
@@ -190,11 +192,11 @@ class AwsClient
      * Print debug information
      * @param $message
      */
-    protected function debugPrint($message) {
+    protected function debugPrint($message)
+    {
         if ($this->config['debug']) {
-            echo $message ."\n";
+            echo $message . "\n";
         }
-
     }
 
     /**
@@ -209,13 +211,13 @@ class AwsClient
                 $this->debugPrint('Using manually set credentials');
                 return $this->config['credentials'];
             } elseif (getenv(self::ENV_KEY) !== false) {
-                $this->debugPrint('Using credentials from the environment: '.getenv(self::ENV_KEY));
+                $this->debugPrint('Using credentials from the environment: ' . getenv(self::ENV_KEY));
                 $credentials = [
                     'key' => getenv(self::ENV_KEY),
                     'secret' => getenv(self::ENV_SECRET)
                 ];
-                    if (self::ENV_SESSION) {
-                    $credentials ['token'] = getenv(self::ENV_SESSION);
+                if (self::ENV_SESSION) {
+                    $credentials['token'] = getenv(self::ENV_SESSION);
                 }
                 return $credentials;
             } elseif ($credentials = self::ini()) {
@@ -257,7 +259,8 @@ class AwsClient
         if (!isset($data[$profile])) {
             return;
         }
-        if (!isset($data[$profile]['aws_access_key_id'])
+        if (
+            !isset($data[$profile]['aws_access_key_id'])
             || !isset($data[$profile]['aws_secret_access_key'])
         ) {
             return;
@@ -312,10 +315,23 @@ class AwsClient
         ];
     }
 
+    /**
+     * Create an instance metadata session - see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+     *
+     * @return string The token
+     */
+    private function getInstanceProfileSessionToken()
+    {
+        if (self::$imds2_token) return self::$imds2_token;
+        $curl_result = $this->curl(self::EC2_SERVER_URI . self::EC2_METADATA_TOKEN, 'PUT', null, ["X-aws-ec2-metadata-token-ttl-seconds: 300"]);
+        self::$imds2_token =  $curl_result['content'];
+        return self::$imds2_token;
+    }
 
     private function getInstanceProfileCredentials()
     {
-        $curl_result = $this->curl(self::EC2_SERVER_URI . self::CRED_PATH);
+        $token = $this->getInstanceProfileSessionToken();
+        $curl_result = $this->curl(self::EC2_SERVER_URI . self::CRED_PATH, 'GET', null, ["X-aws-ec2-metadata-token: $token"]);
         $response = $curl_result['content'];
         $result = $this->decodeResult($response);
         return [
@@ -325,7 +341,6 @@ class AwsClient
             'expiration' => strtotime($result['Expiration']),
         ];
     }
-
 
     /**
      * Fetch credential URI from ECS environment variable
@@ -366,11 +381,15 @@ class AwsClient
         $canonical_query = array_map(function ($data) {
             return rawurlencode($data);
         }, $query_params);
-        $canonical_query_string = implode('&', array_map(
+        $canonical_query_string = implode(
+            '&',
+            array_map(
                 function ($key, $value) {
                     return "$key=$value";
                 },
-                array_keys($canonical_query), array_values($canonical_query))
+                array_keys($canonical_query),
+                array_values($canonical_query)
+            )
         );
 
         //Host must be included in headers
@@ -380,17 +399,24 @@ class AwsClient
 
         $canonical_headers = [];
         foreach ($headers as $key => $value) {
-            $canonical_headers[trim(preg_replace('/\s+/', ' ', strtolower($key)))] = trim(preg_replace('/\s+/', ' ',
-                $value));
+            $canonical_headers[trim(preg_replace('/\s+/', ' ', strtolower($key)))] = trim(preg_replace(
+                '/\s+/',
+                ' ',
+                $value
+            ));
         }
 
         ksort($canonical_headers);
 
-        $canonical_header_string = implode("\n", array_map(
+        $canonical_header_string = implode(
+            "\n",
+            array_map(
                 function ($key, $value) {
                     return "$key:$value";
                 },
-                array_keys($canonical_headers), array_values($canonical_headers))
+                array_keys($canonical_headers),
+                array_values($canonical_headers)
+            )
         );
 
 
@@ -420,7 +446,8 @@ class AwsClient
         $credential_scope = gmdate('Ymd', $date) . "/$this->region/" . strtolower($this->service) . "/aws4_request";
 
         $canonical_request = $this->getCanonicalRequest($method, $uri, $params, $headers, $body, $credential_scope);
-        $canonical_request_hash = hash('sha256',
+        $canonical_request_hash = hash(
+            'sha256',
             $canonical_request['CanonicalRequest']
         );
         $string_to_sign = "AWS4-HMAC-SHA256\n" . $headers['X-Amz-Date'] . "\n$credential_scope\n$canonical_request_hash";
@@ -459,7 +486,7 @@ class AwsClient
 
     protected function awsRequest($action, $params)
     {
-        $endpoint = 'https://' . strtolower($this->service) . '.' . $this->region . '.amazonaws.com/';
+        $endpoint = array_key_exists('endpoint', $this->config) ? $this->config['endpoint']  : 'https://' . strtolower($this->service) . '.' . $this->region . '.amazonaws.com/' ;
 
         $params = $params;
         $headers = [
@@ -478,10 +505,14 @@ class AwsClient
         }
 
         if ($curl_result['error'] || $curl_result['code'] >= 400) {
-            $exception = new AwsClientException($curl_result['error'] . (
-                array_key_exists('message',
-                    $decoded_result) ? $decoded_result['message'] : $result),
-                $curl_result['code'], null);
+            $exception = new AwsClientException(
+                $curl_result['error'] . (array_key_exists(
+                    'message',
+                    $decoded_result
+                ) ? $decoded_result['message'] : $result),
+                $curl_result['code'],
+                null
+            );
             if (array_key_exists('__type', $decoded_result)) {
                 $exception->setAwsErrorType($decoded_result['__type']);
             }
@@ -519,5 +550,4 @@ class AwsClientException extends \Exception
     {
         return $this->aws_error_code;
     }
-
 }
