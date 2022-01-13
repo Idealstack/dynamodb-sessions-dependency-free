@@ -35,7 +35,7 @@ cd -
 for version in $versions; do
     echo "TESTING $version"
     echo "--------------------"
-    docker-compose run $version tools/tmp/phpunit-$version.phar
+    docker-compose run $version tools/tmp/phpunit-$version.phar tests
     RESULT=$?
     if [[ "$RESULT" != 0 ]]; then
         FAILURE=$RESULT
