@@ -2,15 +2,12 @@
 name: CI
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     
 jobs:
   build:
-    #Dont run on draft PR's
-    if: github.event.pull_request.draft == false
-
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
