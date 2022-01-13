@@ -3,10 +3,39 @@ DIR="$(cd "$(dirname "$(realpath "${BASH_SOURCE[0]}")")" >/dev/null 2>&1 && pwd)
 cd $DIR
 
 # Run tests in all PHP versions
-versions="php8 php7.4 php7.3 php7.2 php7.1 php5"
+versions="php8.1 php8 php7.4 php7.3 php7.2 php7.1 php5"
+
+if [[ -n $1 ]]; then
+
+    versions="$1"
+fi
+
+# Download versions of phpunit that will work for each PHP version
+mkdir tmp
+cd tmp
+
+# Download phar versions of phpunit https://phar.phpunit.de/
+curl -C - https://phar.phpunit.de/phpunit-5.7.9.phar -o phpunit5.phar
+curl -C - https://phar.phpunit.de/phpunit-6.5.9.phar -o phpunit6.phar
+curl -C - https://phar.phpunit.de/phpunit-7.5.9.phar -o phpunit7.phar
+curl -C - https://phar.phpunit.de/phpunit-9.5.9.phar -o phpunit9.phar
+chmod 755 phpunit*.phar
+
+# Provide a phpunit compatible with each php version  https://phpunit.de/supported-versions.html
+ln -sf phpunit5.phar phpunit-php5.phar
+ln -sf phpunit6.phar phpunit-php7.0.phar
+ln -sf phpunit6.phar phpunit-php7.1.phar
+ln -sf phpunit6.phar phpunit-php7.2.phar
+ln -sf phpunit7.phar phpunit-php7.3.phar
+ln -sf phpunit9.phar phpunit-php7.4.phar
+ln -sf phpunit9.phar phpunit-php8.phar
+ln -sf phpunit9.phar phpunit-php8.1.phar
+cd -
 
 for version in $versions; do
-    docker-compose run $version 'vendor/bin/phpunit'
+    echo "TESTING $version"
+    echo "--------------------"
+    docker-compose run $version tools/tmp/phpunit-$version.phar
     RESULT=$?
     if [[ "$RESULT" != 0 ]]; then
         FAILURE=$RESULT
