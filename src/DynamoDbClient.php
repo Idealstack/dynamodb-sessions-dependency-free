@@ -36,12 +36,13 @@ class DynamoDbClient extends AwsClient
             try {
                 return $this->awsRequest($action, $arguments[0]);
             } catch (AwsClientException $e) {
-                if ($e->getCode() == 500 ||
-                    array_search($e->getAwsErrorCode(), self::RETRY_ERRORS) !== false) {
-                    error_log ( "Error received calling dynamodb for sessions.  ".$e->getAwsErrorCode() . ':'.$e->getMessage());
+                if (
+                    $e->getCode() == 500 ||
+                    array_search($e->getAwsErrorCode(), self::RETRY_ERRORS) !== false
+                ) {
+                    error_log("Error received calling dynamodb for sessions.  " . $e->getAwsErrorCode() . ':' . $e->getMessage());
                     $retry = true;
-                }
-                else {
+                } else {
                     throw new DynamoDbException($e->getMessage(), $e->getCode(), $e);
                 }
             }
@@ -52,5 +53,4 @@ class DynamoDbClient extends AwsClient
 
 class DynamoDbException extends \Exception
 {
-
 }

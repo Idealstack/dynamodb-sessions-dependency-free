@@ -1,9 +1,11 @@
 <?php
+
 namespace Idealstack\DynamoDbSessionsDependencyFree;
 
-require_once(__DIR__.'/DynamoDbClient.php');
+require_once(__DIR__ . '/DynamoDbClient.php');
 
-class DynamoDbSessionConnection extends AwsClient {
+class DynamoDbSessionConnection extends AwsClient
+{
     /** @var DynamoDbClient The DynamoDB client */
     protected $client;
 
@@ -18,12 +20,12 @@ class DynamoDbSessionConnection extends AwsClient {
     {
         $this->client = $client;
         $this->config = $config + [
-                'table_name'       => 'sessions',
-                'hash_key'         => 'id',
-                'session_lifetime' => (int) ini_get('session.gc_maxlifetime'),
-                'consistent_read'  => true,
-                'batch_config'     => []
-            ];
+            'table_name'       => 'sessions',
+            'hash_key'         => 'id',
+            'session_lifetime' => (int) ini_get('session.gc_maxlifetime'),
+            'consistent_read'  => true,
+            'batch_config'     => []
+        ];
     }
 
     public function read($id)
@@ -145,6 +147,3 @@ class DynamoDbSessionConnection extends AwsClient {
         return false;
     }
 }
-
-
-

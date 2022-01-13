@@ -24,19 +24,21 @@ class DynamoDBSessionAwsClientTest extends TestCase
 
     /**
      * Save the environment
+     * 
+     * NOTE this was once a phpunit setup function but it is impossible to maintain compat with older PHP versions and newer phpunit releases
      */
-    public function setUp()
+    public function setUpEnv()
     {
+        date_default_timezone_set('UTC');
         foreach ($this->envvars as $env) {
             $this->env[$env] = getenv($env);
         }
-        parent::setUp();
     }
 
     /**
      * Restore environment to what it was before the test
      */
-    public function tearDown()
+    public function restoreEnv()
     {
         foreach ($this->envvars as $env) {
             if ($this->env[$env] === false) {
@@ -55,6 +57,7 @@ class DynamoDBSessionAwsClientTest extends TestCase
      */
     public function testCredentials()
     {
+        $this->setupEnv();
         //Make the credentials method public so we can test it
         $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getCredentials');
         $method->setAccessible(true);
@@ -169,6 +172,8 @@ aws_secret_access_key = TEST4
         putenv('AWS_CREDENTIALS_FILENAME');
         $this->assertEquals('TEST4', $credentials['key']);
         putenv('AWS_CONTAINER_CREDENTIALS_RELATIVE_URI=' . $old_env);
+
+        $this->restoreEnv();
     }
 
     /**
@@ -177,6 +182,7 @@ aws_secret_access_key = TEST4
      */
     public function testSigningKey()
     {
+        $this->setupEnv();
 
         $method = new ReflectionMethod('Idealstack\DynamoDbSessionsDependencyFree\AwsClient', 'getSigningKey');
         $method->setAccessible(true);
@@ -190,6 +196,7 @@ aws_secret_access_key = TEST4
         ]);
         $result = $method->invoke($AwsClient, strtotime("2015-08-30"), "iam");
         $this->assertEquals("c4afb1cc5771d871763a393e44b703571b55cc28424d1a5e86da6ed3c154a4b9", bin2hex($result));
+        $this->restoreEnv();
     }
 
     /**
@@ -201,6 +208,7 @@ aws_secret_access_key = TEST4
 
     public function testCanonicalRequest()
     {
+        $this->setupEnv();
 
 
         $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
@@ -252,6 +260,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
             hash('sha256', $result['CanonicalRequest'])
 
         );
+        $this->restoreEnv();
     }
 
     /**
@@ -263,6 +272,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
      */
     public function testAwsRequestHeaders()
     {
+        $this->setupEnv();
 
         $AwsClient = new Idealstack\DynamoDbSessionsDependencyFree\AwsClient([
             'region' => 'us-east-1',
@@ -296,5 +306,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
         $expected_auth_header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/service/aws4_request, SignedHeaders=host;x-amz-date, Signature=b97d918cfa904a5beff61c982a1b6f458b799221646efd99d3219ec94cdf2500";
         $this->assertEquals($expected_auth_header, $headers['Authorization']);
+
+        $this->restoreEnv();
     }
 }

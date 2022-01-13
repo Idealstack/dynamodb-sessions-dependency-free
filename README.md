@@ -21,9 +21,9 @@ See our [blog post](https://idealstack.io/blog/faster-dependency-free-php-sessio
 - Essentially  a drop-in replacement for the official session handler in the AWS SDK
 - Dependency-free - does not depend on any other composer packages. Only requires the core curl and json extensions be 
 enabled in PHP 
+- Runs on a;; PHP versions from 5.6 to 8.1
 - Does not require an autoloader (although will work fine with one, eg composer)
 - Supports most common AWS authentication methods (eg instance profiles, ECS task roles, .aws config files, environment variables)
-- Compatible with all major PHP versions (even PHP 5.6, for all you luddites out there)
 - **Does not support locking** (that's just because we don't need it, a PR is welcome or raise an issue if you need it)
 
 
@@ -107,10 +107,9 @@ use Idealstack\DynamoDbSessionHandlerDependencyFree;
 
 # Development
 There is a docker environment to test with, using local dynamodb 
-
-- `tools/setup` - setup the container and database etc
-- `tools/test` - run the unit tests
-- `tools/console` - run a console
+`tools/setup` - setup the container and database etc
+`tools/test` - run the unit tests
+`tools/console` - run a console
 
 To use XDebug
 

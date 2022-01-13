@@ -1,7 +1,9 @@
 <?php
+
 namespace Idealstack\DynamoDbSessionsDependencyFree;
-require_once(__DIR__.'/DynamoDbSessionConnection.php');
-require_once(__DIR__.'/DynamoDbClient.php');
+
+require_once(__DIR__ . '/DynamoDbSessionConnection.php');
+require_once(__DIR__ . '/DynamoDbClient.php');
 
 class DynamoDbSessionHandler implements \SessionHandlerInterface
 {
@@ -34,7 +36,6 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
     {
         $this->connection = new DynamoDbSessionConnection(new DynamoDbClient($config), $config);
         $this->config = $config + ['base64' => true];
-
     }
     /**
      * Register the DynamoDB session handler.
@@ -42,6 +43,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      * @return bool Whether or not the handler was registered.
      * @codeCoverageIgnore
      */
+
     public function register()
     {
         return session_set_save_handler($this, true);
@@ -55,6 +57,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      *
      * @return bool Whether or not the operation succeeded.
      */
+    #[\ReturnTypeWillChange]
     public function open($savePath, $sessionName)
     {
         $this->savePath = $savePath;
@@ -68,6 +71,8 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      *
      * @return bool Success
      */
+
+    #[\ReturnTypeWillChange]
     public function close()
     {
         $id = session_id();
@@ -88,6 +93,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      *
      * @return string Session data.
      */
+    #[\ReturnTypeWillChange]
     public function read($id)
     {
         $this->openSessionId = $id;
@@ -118,10 +124,11 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      *
      * @return bool Whether or not the operation succeeded.
      */
+    #[\ReturnTypeWillChange]
     public function write($id, $data)
     {
 
-        if ($this->config['base64'] ) {
+        if ($this->config['base64']) {
             $data = base64_encode($data);
         }
         $changed = $id !== $this->openSessionId
@@ -142,6 +149,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      *
      * @return bool Whether or not the operation succeeded.
      */
+    #[\ReturnTypeWillChange]
     public function destroy($id)
     {
         $this->openSessionId = $id;
@@ -161,6 +169,7 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
      * @return bool Whether or not the operation succeeded.
      * @codeCoverageIgnore
      */
+    #[\ReturnTypeWillChange]
     public function gc($maxLifetime)
     {
         // Garbage collection for a DynamoDB table must be triggered manually.
@@ -179,5 +188,4 @@ class DynamoDbSessionHandler implements \SessionHandlerInterface
     {
         return trim($this->sessionName . '_' . $id, '_');
     }
-
 }

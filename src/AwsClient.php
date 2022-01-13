@@ -246,7 +246,9 @@ class AwsClient
      */
     private static function ini($profile = null, $filename = null)
     {
-        $filename = $filename ?: (getenv(self::ENV_FILENAME) ? getenv(self::ENV_FILENAME) : self::getHomeDir() . '/.aws/credentials');
+        if (is_null($filename)) {
+            $filename = getenv(self::ENV_FILENAME) ? getenv(self::ENV_FILENAME) : self::getHomeDir() . '/.aws/credentials';
+        }
         $profile = $profile ?: (getenv(self::ENV_PROFILE) ?: 'default');
 
         if (!is_readable($filename)) {
@@ -277,7 +279,7 @@ class AwsClient
             'secret' => trim($data[$profile]['aws_secret_access_key']),
 
         ];
-        if (array_key_exists('aws_session_token', $data[$profile])) {
+        if (array_key_exists('aws_session_token', $data[$profile]) && !is_null($data[$profile]['aws_session_token'])) {
             $credentials['token'] = trim($data[$profile]['aws_session_token']);
         }
         return $credentials;
@@ -486,7 +488,7 @@ class AwsClient
 
     protected function awsRequest($action, $params)
     {
-        $endpoint = array_key_exists('endpoint', $this->config) ? $this->config['endpoint']  : 'https://' . strtolower($this->service) . '.' . $this->region . '.amazonaws.com/' ;
+        $endpoint = array_key_exists('endpoint', $this->config) ? $this->config['endpoint']  : 'https://' . strtolower($this->service) . '.' . $this->region . '.amazonaws.com/';
 
         $params = $params;
         $headers = [
